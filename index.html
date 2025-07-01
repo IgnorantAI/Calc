@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Simple Calculator</title>
+    <style>
+      /* General page styling */
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+
+      /* Calculator container */
+      #calculator {
+        background-color: #222;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        width: 300px;
+      }
+
+      /* Display screen */
+      #display {
+        width: 100%;
+        height: 60px;
+        margin-bottom: 15px;
+        font-size: 28px;
+        text-align: right;
+        padding: 10px 15px;
+        box-sizing: border-box;
+        border: none;
+        border-radius: 5px;
+        background-color: #1e1e1e;
+        color: #fff;
+      }
+
+      /* Buttons container */
+      #buttons {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+      }
+
+      /* button styling */
+      button {
+        padding: 20px;
+        font-size: 18px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+
+      /* button colors */
+      button:hover {
+        background-color: #555;
+        color: #fff;
+      }
+
+      #btn-clear {
+        grid-column: span 4;
+        background-color: #ff4d4d;
+        color: white;
+      }
+
+      #btn-equals {
+        background-color: #4caf50;
+        color: white;
+      }
+
+      #btn-add,
+      #btn-subtract,
+      #btn-multiply,
+      #btn-divide {
+        background-color: #ffa500;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="calculator">
+      <div id="display"></div>
+
+      <div id="buttons">
+        <button class="number" id="btn-7">7</button>
+        <button class="number" id="btn-8">8</button>
+        <button class="number" id="btn-9">9</button>
+        <button class="operand" id="btn-divide">/</button>
+
+        <button class="number" id="btn-4">4</button>
+        <button class="number" id="btn-5">5</button>
+        <button class="number" id="btn-6">6</button>
+        <button class="operand" id="btn-multiply">*</button>
+
+        <button class="number" id="btn-1">1</button>
+        <button class="number" id="btn-2">2</button>
+        <button class="number" id="btn-3">3</button>
+        <button class="operand" id="btn-subtract">-</button>
+
+        <button class="number" id="btn-0">0</button>
+        <button id="btn-dot">.</button>
+        <button id="btn-equals">=</button>
+        <button class="operand" id="btn-add">+</button>
+
+        <button id="btn-clear">C</button>
+      </div>
+    </div>
+    <script>
+      // Store currentNumbers and operands into an object
+      let previousNumber = "";
+      let operand = "";
+      let currentNumber = "";
+
+      const display = document.getElementById("display");
+
+      function updateDisplay() {
+        display.textContent = `${previousNumber} ${operand} ${currentNumber}`;
+      }
+
+      const buttons = document.getElementsByClassName("number");
+
+      for (let button of buttons) {
+        button.addEventListener("click", () => {
+          if (previousNumber) {
+            if (!operand) {
+              alert("Might wanna chose an operand first");
+              return;
+            }
+          }
+          currentNumber += button.textContent;
+          updateDisplay();
+        });
+      }
+
+      const operand_buttons = document.getElementsByClassName("operand");
+
+      for (let ops of operand_buttons) {
+        ops.addEventListener("click", () => {
+          // If there is already data, do the operation
+
+          if (operand) {
+            if (previousNumber && currentNumber) {
+              doOperation();
+              operand = ops.textContent;
+              return;
+            }
+          }
+
+          if (!currentNumber) {
+            operand = ops.textContent;
+          }
+
+          if (currentNumber) {
+            previousNumber = currentNumber;
+            currentNumber = "";
+            operand = ops.textContent;
+          }
+          updateDisplay();
+        });
+      }
+
+      const btnDot = document.getElementById("btn-dot");
+      //adding the dot
+      btnDot.addEventListener("click", () => {
+        if (currentNumber.includes(".")) {
+          return;
+        }
+        currentNumber += ".";
+        updateDisplay();
+      });
+
+      const btnEquals = document.getElementById("btn-equals");
+
+      function eval() {
+        if (!operand) {
+          return;
+        }
+        doOperation();
+        operand = "";
+        updateDisplay();
+      }
+
+      btnEquals.addEventListener("click", eval);
+
+      function clearDisplay() {
+        currentNumber = "";
+        previousNumber = "";
+        operand = "";
+        updateDisplay();
+      }
+      // clear the display and stored numbers
+      const btnClear = document.getElementById("btn-clear");
+      btnClear.addEventListener("click", clearDisplay);
+
+      function doOperation() {
+        // do the operation and store the previousNumber to previousNumber number
+        const a = Number(previousNumber);
+        const b = Number(currentNumber);
+        switch (operand) {
+          case "+":
+            previousNumber = a + b;
+            break;
+          case "-":
+            previousNumber = a - b;
+            break;
+          case "*":
+            previousNumber = a * b;
+            break;
+          case "/":
+            previousNumber = a / b;
+            break;
+        }
+
+        currentNumber = "";
+        operand = "";
+        updateDisplay();
+      }
+
+      document.addEventListener("keydown", (event) => {
+        event.preventDefault();
+        let value = event.key;
+
+        console.log(value);
+
+        const allowedKeys = [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          ".",
+          "Enter",
+          "Backspace",
+          "Escape",
+          "Delete",
+          "+",
+          "-",
+          "*",
+          "/",
+        ];
+
+        if (!allowedKeys.includes(value)) {
+          alert(`That's not a number or valid key...`);
+        }
+        if (value === "Enter") {
+          eval();
+        }
+
+        if (value >= "0" && value <= "9") {
+          if (previousNumber) {
+            if (!operand) {
+              alert("Might wanna chose an operand first");
+              return;
+            }
+          }
+          currentNumber += value;
+          updateDisplay();
+        }
+
+        if (value === ".") {
+          if (!currentNumber.includes(".")) {
+            currentNumber += value;
+            updateDisplay();
+          }
+        }
+
+        if (value === "Backspace") {
+          currentNumber = currentNumber.slice(0, -1);
+          updateDisplay();
+        }
+
+        if (value === "Escape" || value === "Delete") {
+          clearDisplay();
+        }
+
+        if (value === "+" || value === "-" || value === "*" || value === "/") {
+          if (previousNumber) {
+            if (currentNumber) {
+              doOperation();
+            }
+          } else {
+            previousNumber = currentNumber;
+            currentNumber = "";
+          }
+          operand = value;
+          updateDisplay();
+        }
+      });
+    </script>
+  </body>
+</html>
